@@ -17,6 +17,15 @@ const PORT = process.env.PORT || 5001;
 app.use(express.json()); //giúp express hiểu và đọc các body dạng JSON
 app.use(cookieParser()); // middleware để parse cookie từ request header
 
+// health check endpoint
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    message: "Server is running",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // public routes
 app.use("/api/auth", authRoute);
 
