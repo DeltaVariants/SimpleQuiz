@@ -101,3 +101,32 @@ export async function filterQuestionsByKeyword(quizId, keyword) {
     questions: questions,
   };
 }
+
+// GET /quizzes/:quizId/take - Get quiz for taking (without correctAnswerIndex)
+export async function getQuizForTaking(quizId) {
+  const quiz = await Quiz.findById(quizId).populate("questions");
+
+  if (!quiz) return null;
+
+  // Remove correctAnswerIndex from questions for security
+  const sanitizedQuestions = quiz.questions.map((q) => ({
+    _id: q._id,
+    text: q.text,
+    options: q.options,
+    keywords: q.keywords,
+    // correctAnswerIndex is intentionally excluded
+  }));
+
+  return {
+    _id: quiz._id,
+    title: quiz.title,
+    description: quiz.description,
+    questions: sanitizedQuestions,
+  };
+}
+
+// POST /quizzes/:quizId/submit - Submit quiz answers
+export async function submitQuizAnswers(quizId, userId, answers) {
+  const attemptService = await import("./attemptService.js");
+  return await attemptService.default.createAttempt(userId, quizId, answers);
+}

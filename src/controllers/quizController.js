@@ -251,3 +251,62 @@ export async function getPopulatedQuizByKeyword(req, res) {
       .json(errorResponse(500, "Internal Server Error", error.message));
   }
 }
+
+export async function takeQuiz(req, res) {
+  // GET /quizzes/:quizId/take
+  try {
+    const quiz = await quizService.getQuizForTaking(req.params.quizId);
+    if (!quiz) {
+      return res.status(404).json(errorResponse(404, "Quiz not found"));
+    }
+    res.status(200).json(successResponse(quiz, "Quiz retrieved for taking"));
+  } catch (error) {
+    res
+      .status(500)
+      .json(errorResponse(500, "Internal Server Error", error.message));
+  }
+}
+
+export async function submitQuiz(req, res) {
+  // POST /quizzes/:quizId/submit
+  try {
+    const { answers } = req.body;
+
+    // Validate answers
+    if (!Array.isArray(answers) || answers.length === 0) {
+      return res
+        .status(400)
+        .json(errorResponse(400, "Answers phải là mảng và không được rỗng"));
+    }
+
+    // Validate each answer
+    for (let i = 0; i < answers.length; i++) {
+      const answer = answers[i];
+      if (!answer.questionId || answer.selectedIndex === undefined) {
+        return res
+          .status(400)
+          .json(
+            errorResponse(
+              400,
+              `Answer ${i + 1}: questionId và selectedIndex là bắt buộc`
+            )
+          );
+      }
+    }
+
+    const result = await quizService.submitQuizAnswers(
+      req.params.quizId,
+      req.user._id,
+      answers
+    );
+
+    res
+      .status(201)
+      .json(successResponse(result, "Quiz submitted successfully"));
+  } catch (error) {
+    if (error.message === "Quiz not found") {
+      return res.status(404).json(errorResponse(404, error.message));
+    }
+    res.status(400).json(errorResponse(400, error.message));
+  }
+}

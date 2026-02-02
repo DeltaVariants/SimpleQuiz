@@ -24,16 +24,18 @@ Hệ thống sử dụng 3 middleware chính:
 
 ### **Quiz Routes** (Yêu cầu đăng nhập)
 
-| Endpoint                         | Method | Middleware                       | Ai được phép?     | Mô tả                         |
-| -------------------------------- | ------ | -------------------------------- | ----------------- | ----------------------------- |
-| `/api/quizzes`                   | GET    | `protectedRoute`                 | ✅ User đã login  | Xem tất cả quiz               |
-| `/api/quizzes`                   | POST   | `protectedRoute` + `verifyAdmin` | 🔒 **Admin only** | Tạo quiz mới                  |
-| `/api/quizzes/:quizId`           | GET    | `protectedRoute`                 | ✅ User đã login  | Xem chi tiết quiz             |
-| `/api/quizzes/:quizId`           | PUT    | `protectedRoute` + `verifyAdmin` | 🔒 **Admin only** | Cập nhật quiz                 |
-| `/api/quizzes/:quizId`           | DELETE | `protectedRoute` + `verifyAdmin` | 🔒 **Admin only** | Xóa quiz                      |
-| `/api/quizzes/:quizId/populate`  | GET    | `protectedRoute`                 | ✅ User đã login  | Xem quiz với questions đã lọc |
-| `/api/quizzes/:quizId/question`  | POST   | `protectedRoute` + `verifyAdmin` | 🔒 **Admin only** | Thêm 1 question vào quiz      |
-| `/api/quizzes/:quizId/questions` | POST   | `protectedRoute` + `verifyAdmin` | 🔒 **Admin only** | Thêm nhiều questions vào quiz |
+| Endpoint                         | Method | Middleware                       | Ai được phép?     | Mô tả                                 |
+| -------------------------------- | ------ | -------------------------------- | ----------------- | ------------------------------------- |
+| `/api/quizzes`                   | GET    | `protectedRoute`                 | ✅ User đã login  | Xem tất cả quiz                       |
+| `/api/quizzes`                   | POST   | `protectedRoute` + `verifyAdmin` | 🔒 **Admin only** | Tạo quiz mới                          |
+| `/api/quizzes/:quizId`           | GET    | `protectedRoute`                 | ✅ User đã login  | Xem chi tiết quiz                     |
+| `/api/quizzes/:quizId`           | PUT    | `protectedRoute` + `verifyAdmin` | 🔒 **Admin only** | Cập nhật quiz                         |
+| `/api/quizzes/:quizId`           | DELETE | `protectedRoute` + `verifyAdmin` | 🔒 **Admin only** | Xóa quiz                              |
+| `/api/quizzes/:quizId/populate`  | GET    | `protectedRoute`                 | ✅ User đã login  | Xem quiz với questions đã lọc         |
+| `/api/quizzes/:quizId/question`  | POST   | `protectedRoute` + `verifyAdmin` | 🔒 **Admin only** | Thêm 1 question vào quiz              |
+| `/api/quizzes/:quizId/questions` | POST   | `protectedRoute` + `verifyAdmin` | 🔒 **Admin only** | Thêm nhiều questions vào quiz         |
+| `/api/quizzes/:quizId/take`      | GET    | `protectedRoute`                 | ✅ User đã login  | Lấy quiz để làm bài (không có đáp án) |
+| `/api/quizzes/:quizId/submit`    | POST   | `protectedRoute`                 | ✅ User đã login  | Submit bài làm và nhận kết quả        |
 
 ---
 
@@ -57,6 +59,15 @@ Hệ thống sử dụng 3 middleware chính:
 
 ---
 
+### **Attempt Routes** (Yêu cầu đăng nhập)
+
+| Endpoint                   | Method | Middleware       | Ai được phép?       | Mô tả                                  |
+| -------------------------- | ------ | ---------------- | ------------------- | -------------------------------------- |
+| `/api/attempts/me`         | GET    | `protectedRoute` | ✅ User đã login    | Xem tất cả attempts của user           |
+| `/api/attempts/:attemptId` | GET    | `protectedRoute` | 🔒 Owner hoặc Admin | Xem chi tiết attempt (kết quả bài làm) |
+
+---
+
 ## 📊 Tóm tắt theo vai trò
 
 ### **Public (Không cần đăng nhập)**
@@ -67,7 +78,9 @@ Hệ thống sử dụng 3 middleware chính:
 
 - Xem tất cả quiz, questions
 - Xem thông tin cá nhân (`/users/me`)
-- **Không thể:** Tạo/sửa/xóa quiz
+- **Làm quiz:** Lấy quiz (`/quizzes/:quizId/take`) và submit bài (`/quizzes/:quizId/submit`)
+- **Xem kết quả:** Xem lịch sử attempts (`/attempts/me`) và chi tiết từng attempt của mình
+- **Không thể:** Tạo/sửa/xóa quiz, xem kết quả của người khác
 
 ### **Author (Tác giả của question)**
 
@@ -81,6 +94,7 @@ Hệ thống sử dụng 3 middleware chính:
 - Tạo/sửa/xóa quiz
 - Thêm questions vào quiz
 - Xem danh sách tất cả users
+- **Xem tất cả attempts:** Admin có thể xem kết quả bài làm của bất kỳ user nào
 - **Lưu ý:** Admin không tự động có quyền sửa/xóa question của người khác (trừ khi là author)
 
 ---

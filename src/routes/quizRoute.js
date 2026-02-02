@@ -56,4 +56,14 @@ router
     quizController.createManyQuestionsInQuiz
   ); // POST /quizzes/:quizId/questions - chỉ Admin
 
+// Routes để lấy quiz cho user làm bài: /quizzes/:quizId/take
+router
+  .route("/:quizId/take")
+  .get(validateObjectId("quizId"), protectedRoute, quizController.takeQuiz); // GET /quizzes/:quizId/take - user đã đăng nhập
+
+// Routes để submit quiz: /quizzes/:quizId/submit
+router
+  .route("/:quizId/submit")
+  .post(validateObjectId("quizId"), protectedRoute, quizController.submitQuiz); // POST /quizzes/:quizId/submit - user đã đăng nhập
+
 export default router;

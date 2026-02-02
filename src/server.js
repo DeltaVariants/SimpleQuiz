@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import { protectedRoute } from "./middlewares/authMiddleware.js";
 import quizRoute from "./routes/quizRoute.js";
 import questionRoute from "./routes/questionRoute.js";
+import attemptRoute from "./routes/attemptRoute.js";
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use(protectedRoute); // áp dụng middleware xác thực cho các route ở
 app.use("/api/quizzes", quizRoute);
 app.use("/api/questions", questionRoute);
 app.use("/api/users", userRoute);
+app.use("/api/attempts", attemptRoute);
 
 // Connect to the database and start the server
 connectDB();

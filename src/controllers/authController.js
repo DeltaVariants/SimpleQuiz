@@ -3,6 +3,12 @@ import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import Session from "../models/Session.js";
+import {
+  successResponse,
+  errorResponse,
+  serverErrorResponse,
+  validationErrorResponse,
+} from "../libs/apiResponse.js";
 
 // JWT: access token sống ngắn, thư viện jwt hỗ trợ format "30m", "1h", ...
 const ACCESS_TOKEN_TTL = "30m"; // thường dưới 15 phút
@@ -18,52 +24,65 @@ export const signUp = async (req, res) => {
     if (!username || !password || !email) {
       return res
         .status(400)
-        .json({ message: "Vui lòng điền đầy đủ thông tin" });
+        .json(errorResponse(400, "Vui lòng điền đầy đủ thông tin"));
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ message: "Email không hợp lệ" });
+      return res.status(400).json(errorResponse(400, "Email không hợp lệ"));
     }
 
     // Validate username length
     if (username.length < 3 || username.length > 20) {
-      return res.status(400).json({ message: "Username phải từ 3-20 ký tự" });
+      return res
+        .status(400)
+        .json(errorResponse(400, "Username phải từ 3-20 ký tự"));
     }
 
     // Validate password length
     if (password.length < 6 || password.length > 8) {
-      return res.status(400).json({ message: "Password phải từ 6-8 ký tự" });
+      return res
+        .status(400)
+        .json(errorResponse(400, "Password phải từ 6-8 ký tự"));
     }
 
     // Kiem tra username hoac email da ton tai chua
     const duplicate = await User.findOne({ username });
     if (duplicate) {
-      return res.status(409).json({ message: "User này đã tồn tại!" });
+      return res.status(409).json(errorResponse(409, "User này đã tồn tại!"));
     }
 
     // Kiểm tra email đã tồn tại chưa
     const emailExists = await User.findOne({ email });
     if (emailExists) {
-      return res.status(409).json({ message: "Email này đã được sử dụng!" });
+      return res
+        .status(409)
+        .json(errorResponse(409, "Email này đã được sử dụng!"));
     }
 
     // Neu chua, ma hoa password
     const hashedPassword = await bcrypt.hash(password, 10); // salt =10 là độ phức tạp của mã hóa
 
     // Tao user moi va luu vao DB
-    await User.create({
+    const newUser = await User.create({
       username,
       hashedPassword,
       email,
     });
 
     // Tra ve ket qua cho client
-    return res.sendStatus(204); // 204: thành công nhưng không có nội dung trả về
+    return res
+      .status(201)
+      .json(
+        successResponse(
+          { userId: newUser._id, username: newUser.username },
+          "Đăng ký thành công"
+        )
+      );
   } catch (error) {
     console.error("Lỗi khi gọi signUp", error);
-    return res.status(500).json({ message: "Lỗi server" });
+    return res.status(500).json(serverErrorResponse("Lỗi server"));
   }
 };
 
@@ -75,19 +94,23 @@ export const signIn = async (req, res) => {
     if (!username || !password) {
       return res
         .status(400)
-        .json({ message: "Vui lòng điền đầy đủ thông tin" });
+        .json(errorResponse(400, "Vui lòng điền đầy đủ thông tin"));
     }
     // lấy hashedPassword từ database dựa trên username để so với password input
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(401).json({ message: "Sai username hoặc password" });
+      return res
+        .status(401)
+        .json(errorResponse(401, "Sai username hoặc password"));
     }
 
     // kiểm tra password
     const passwordCorrect = await bcrypt.compare(password, user.hashedPassword);
 
     if (!passwordCorrect) {
-      return res.status(401).json({ message: "Sai username hoặc password" });
+      return res
+        .status(401)
+        .json(errorResponse(401, "Sai username hoặc password"));
     }
 
     // nếu khớp, tạo accessToken với JWT
@@ -117,13 +140,17 @@ export const signIn = async (req, res) => {
     });
 
     // trả accessToken về cho client thông qua response body
-    return res.status(200).json({
-      message: `User ${user.username} đăng nhập thành công`,
-      accessToken,
-    });
+    return res
+      .status(200)
+      .json(
+        successResponse(
+          { accessToken },
+          `User ${user.username} đăng nhập thành công`
+        )
+      );
   } catch (error) {
     console.error("Lỗi khi gọi signIn", error);
-    return res.status(500).json({ message: "Lỗi server" });
+    return res.status(500).json(serverErrorResponse("Lỗi server"));
   }
 };
 
@@ -140,9 +167,9 @@ export const signOut = async (req, res) => {
       res.clearCookie("refreshToken");
     }
 
-    return res.sendStatus(204);
+    return res.status(200).json(successResponse(null, "Đăng xuất thành công"));
   } catch (error) {
     console.error("Lỗi khi gọi signOut", error);
-    return res.status(500).json({ message: "Lỗi server" });
+    return res.status(500).json(serverErrorResponse("Lỗi server"));
   }
 };
