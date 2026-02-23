@@ -27,7 +27,7 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// public routes
+// public routes - không cần xác thực
 app.use("/api/auth", authRoute);
 
 // private routes - yêu cầu đăng nhập
@@ -40,5 +40,5 @@ app.use("/api/attempts", attemptRoute);
 // Connect to the database and start the server
 connectDB();
 app.listen(PORT, () => {
-  console.log(`Server đang chạy trên port ${PORT}`);
+  console.log(`Server đang hoạt động`);
 });

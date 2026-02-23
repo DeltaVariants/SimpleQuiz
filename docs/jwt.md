@@ -93,6 +93,46 @@ Phân tích:
 
 ## Cách hoạt động
 
+### Luồng hoạt động chi tiết
+
+```mermaid
+sequenceDiagram
+    participant Client as Client (Frontend)
+    participant Server as Server (Backend)
+    participant DB as Database
+
+    Note over Client,Server: 1. Quá trình Đăng nhập (Login)
+    Client->>Server: POST /api/auth/login<br/>(email, password)
+    Server->>DB: Tìm kiếm user theo email
+    DB-->>Server: Trả về user info
+    alt User tồn tại & mật khẩu đúng
+        Server->>Server: Hash password & so sánh
+        Server->>Server: Tạo JWT token<br/>(Header, Payload, Signature)
+        Server-->>Client: 200 OK + JWT Token
+    else User không tồn tại hoặc mật khẩu sai
+        Server-->>Client: 401 Unauthorized
+    end
+
+    Note over Client: 2. Client lưu trữ Token
+    Client->>Client: Lưu JWT vào localStorage/sessionStorage
+
+    Note over Client,Server: 3. Sử dụng Token trong request
+    Client->>Server: GET /api/user/profile<br/>Header: Authorization: Bearer {token}
+    Server->>Server: Verify JWT Signature
+    Server->>Server: Kiểm tra token expiration
+    alt Token hợp lệ
+        Server->>Server: Decode payload lấy user info
+        Server->>DB: Lấy dữ liệu user
+        DB-->>Server: Trả về dữ liệu
+        Server-->>Client: 200 OK + User data
+    else Token không hợp lệ hoặc expired
+        Server-->>Client: 401 Unauthorized
+        Client->>Client: Xóa token & redirect sang login
+    end
+```
+
+### Mô tả từng bước
+
 1. **Đăng nhập**: User gửi credentials → Server xác thực và tạo JWT
 2. **Lưu trữ**: Client lưu JWT (thường trong localStorage hoặc cookie)
 3. **Gửi request**: Client gửi JWT trong header `Authorization: Bearer <token>`
