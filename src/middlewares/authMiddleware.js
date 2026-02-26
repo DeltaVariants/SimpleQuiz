@@ -37,6 +37,7 @@ export const protectedRoute = (req, res, next) => {
       process.env.ACCESS_TOKEN_SECRET,
       async (err, decodedUser) => {
         if (err) {
+          console.error("JWT Verification Error:", err.message);
           //nếu xác thực bị lỗi, trả về 403
           return res
             .status(403)
