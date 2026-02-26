@@ -4,7 +4,6 @@ import { connectDB } from "./libs/db.js";
 import authRoute from "./routes/authRoute.js";
 import userRoute from "./routes/userRoute.js";
 import cookieParser from "cookie-parser";
-import { protectedRoute } from "./middlewares/authMiddleware.js";
 import quizRoute from "./routes/quizRoute.js";
 import questionRoute from "./routes/questionRoute.js";
 import attemptRoute from "./routes/attemptRoute.js";
@@ -18,7 +17,7 @@ const PORT = process.env.PORT || 5001;
 app.use(express.json()); //giúp express hiểu và đọc các body dạng JSON
 app.use(cookieParser()); // middleware để parse cookie từ request header
 
-// health check endpoint
+// health check endpoint - PHẢI ĐẶT TRƯỚC TẤT CẢ MIDDLEWARE XÁC THỰC
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     status: "OK",
@@ -30,8 +29,7 @@ app.get("/api/health", (req, res) => {
 // public routes - không cần xác thực
 app.use("/api/auth", authRoute);
 
-// private routes - yêu cầu đăng nhập
-app.use(protectedRoute); // áp dụng middleware xác thực cho các route ở dưới
+// routes có middleware xác thực được định nghĩa ở từng route cụ thể
 app.use("/api/quizzes", quizRoute);
 app.use("/api/questions", questionRoute);
 app.use("/api/users", userRoute);
@@ -40,5 +38,5 @@ app.use("/api/attempts", attemptRoute);
 // Connect to the database and start the server
 connectDB();
 app.listen(PORT, () => {
-  console.log(`Server đang hoạt động`);
+  console.log(`Server đang hoạt động tại http://localhost:${PORT}`);
 });

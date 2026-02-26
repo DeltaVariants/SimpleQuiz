@@ -18,7 +18,7 @@ const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 days (ms)
 
 export const signUp = async (req, res) => {
   try {
-    const { username, password, email } = req.body;
+    const { username, password, email, isAdmin } = req.body;
 
     // Validate required fields
     if (!username || !password || !email) {
@@ -65,11 +65,18 @@ export const signUp = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10); // salt =10 là độ phức tạp của mã hóa
 
     // Tao user moi va luu vao DB
-    const newUser = await User.create({
+    const userData = {
       username,
       hashedPassword,
       email,
-    });
+    };
+
+    // Thêm isAdmin nếu được cung cấp (optional, mặc định false theo schema)
+    if (isAdmin !== undefined) {
+      userData.isAdmin = isAdmin;
+    }
+
+    const newUser = await User.create(userData);
 
     // Tra ve ket qua cho client
     return res
