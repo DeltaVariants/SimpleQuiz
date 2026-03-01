@@ -1,0 +1,603 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: SimpleQuiz
+meta:
+  id: wrk_542d8214271742ceaedaec8460126c74
+  created: 1764556402658
+  modified: 1764636426899
+  description: ""
+collection:
+  - url: "{{ _.server }}/health"
+    name: Check health
+    meta:
+      id: req_8bae8e93e8cb4763a3434a8718e970de
+      created: 1771841090993
+      modified: 1772076778529
+      isPrivate: false
+      description: ""
+      sortKey: -1771841090993
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.3.1
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - name: Quiz
+    meta:
+      id: fld_377020a887ee4f278e6e59686ad0b4be
+      created: 1764636946293
+      modified: 1772077633468
+      sortKey: -1764636946693
+      description: ""
+    children:
+      - url: "{{ _.local5001 }}/quizzes"
+        name: listQuizzes
+        meta:
+          id: req_3aa748137b2a47fa888c081b38f5d3e3
+          created: 1764556402753
+          modified: 1772077609895
+          isPrivate: false
+          description: Lấy danh sách tất cả Quiz kèm theo chi tiết các Question liên quan.
+          sortKey: -1764636980714
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.local5001 }}/quizzes"
+        name: createQuiz
+        meta:
+          id: req_676332c0581d4f90835149a58304e465
+          created: 1764636797340
+          modified: 1772077558459
+          isPrivate: false
+          description: Tạo một Quiz mới (gửi title, description trong body).
+          sortKey: -1764636980614
+        method: POST
+        body:
+          mimeType: application/json
+          text: >
+            {
+              "title": "Basic Science Quiz111",
+              "description": "Test your knowledge of physics, chemistry, and biology fundamentals111"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        scripts:
+          afterResponse: |
+            // Parse response body
+            const response = JSON.parse(insomnia.response.text());
+
+            // Lấy _id từ response
+            const quizId = response.data?._id;
+
+            if (!quizId) {
+              console.log("❌ Không tìm thấy quizId trong response");
+              return;
+            }
+
+            // Tạo tên biến động (dựa theo timestamp)
+            const timestamp = new Date().getTime();
+            const variableName = `quiz_id_${timestamp}`;
+
+            // Lưu vào Environment
+            insomnia.environment.set(variableName, quizId);
+
+            // Log để kiểm tra
+            console.log(`✅ Saved ${variableName} = ${quizId}`);
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3000/quizzes/696d9ebdc81935f5700be2ab
+        name: getQuiz
+        meta:
+          id: req_8d4fef1ac29a4d1ea1662f13d2f8b579
+          created: 1764636853558
+          modified: 1768793741241
+          isPrivate: false
+          description: Lấy thông tin chi tiết của một Quiz theo ID.
+          sortKey: -1764636980564
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.local5001 }}/quizzes/699fc1f7f52fa91ac7da84dc"
+        name: updateQuiz
+        meta:
+          id: req_ce2d0c3e72d641d883dfe967ca825029
+          created: 1764636907560
+          modified: 1772077582897
+          isPrivate: false
+          description: Cập nhật thông tin của một Quiz theo ID.
+          sortKey: -1764636980414
+        method: PUT
+        body:
+          mimeType: application/json
+          text: >
+            {
+              "title": "Basic Science Quiz 123",
+              "description": "Test your knowledge of physics, chemistry, and biology fundamentals"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3000/quizzes/{{ _.quiz_id_1768794243523 }}
+        name: deleteQuiz
+        meta:
+          id: req_fe989170f92a408282aeed6ce5f25ee4
+          created: 1764637002731
+          modified: 1768794424050
+          isPrivate: false
+          description: ""
+          sortKey: -1764636980314
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3000/quizzes/{{ _.quizID2 }}/populate
+        name: populateQuiz
+        meta:
+          id: req_dc747ac7e0c6418aa1d6259e3a7534c8
+          created: 1764637101254
+          modified: 1768793786947
+          isPrivate: false
+          description: ""
+          sortKey: -1764636980214
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3000/quizzes/{{ _.quiz_id_1768794243523 }}/question
+        name: addQuestionToQuiz
+        meta:
+          id: req_abce9e966f2d4f119b11d4e700a0541a
+          created: 1764637127693
+          modified: 1768794397418
+          isPrivate: false
+          description: ""
+          sortKey: -1764636980114
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+                "text": "Which author discusses the interplay between cultural and economic capital?",
+                "options": ["Pierre Bourdieu", "F. Scott Fitzgerald", "Virginia Woolf", "George Orwell"],
+                "correctAnswerIndex": 0,
+                "keywords": ["literature", "capital", "sociology"]
+              }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3000/quizzes/{{ _.quiz_id_1768794243523 }}/questions
+        name: addManyQuestionsToQuiz
+        meta:
+          id: req_75311f16faf04b97a88a85782e1abfd7
+          created: 1764637146441
+          modified: 1768794409246
+          isPrivate: false
+          description: ""
+          sortKey: -1764636980014
+        method: POST
+        body:
+          mimeType: application/json
+          text: >+
+            [
+              {
+                "text": "Which novel discusses the concept of cultural capital111?",
+                "options": ["The Great Gatsby", "Pride and Prejudice", "Jane Eyre", "Moby-Dick"],
+                "correctAnswerIndex": 0,
+                "keywords": ["literature", "capital", "sociology"]
+              },
+              {
+                "text": "In literature, 'capital' can symbolize abc:",
+                "options": ["Wealth and influence", "A geographical city", "A title of a book", "A writing style"],
+                "correctAnswerIndex": 0,
+                "keywords": ["literature", "capital", "symbolism"]
+              }
+            ]
+
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    scripts:
+      preRequest: |-
+        // Lấy token từ environment
+        const token = insomnia.environment.get('token');
+
+        // Nếu có token thì thêm header Authorization
+        if (token) {
+          insomnia.request.addHeader({
+            key: 'Authorization',
+            value: `Bearer ${token}`
+          });
+        }
+    authentication:
+      type: bearer
+  - name: Question
+    meta:
+      id: fld_3576a62915b84a7a8e8c4fdea98541cd
+      created: 1764637069223
+      modified: 1764637083850
+      sortKey: -1764636946593
+      description: ""
+    children:
+      - url: http://localhost:3000/questions
+        name: listQuestions
+        meta:
+          id: req_66fd9cb23bff4d35bb24fd23f0c655c1
+          created: 1764643234568
+          modified: 1768793958898
+          isPrivate: false
+          description: ""
+          sortKey: -1764643234568
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3000/questions/{{ _.questionID }}
+        name: getQuestion
+        meta:
+          id: req_9b9712d1f84d465dab5110429302c591
+          created: 1764643263818
+          modified: 1768793999861
+          isPrivate: false
+          description: ""
+          sortKey: -1764643234368
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3000/questions/{{ _.questionID2 }}
+        name: updateQuestion
+        meta:
+          id: req_2380529de1304391bb62070832335480
+          created: 1764643292864
+          modified: 1768794302052
+          isPrivate: false
+          description: ""
+          sortKey: -1764643234268
+        method: PUT
+        body:
+          mimeType: application/json
+          text: >-
+            {
+                "text": "Which author discusses the interplay between cultural and economic capital???? 123",
+                "options": ["Pierre Bourdieu", "F. Scott Fitzgerald", "Virginia Woolf", "George Orwell"],
+                "correctAnswerIndex": 0,
+                "keywords": ["literature", "capital", "sociology"]
+              }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3000/questions/692f2affbac6ff006f38dbad
+        name: deleteQuestion
+        meta:
+          id: req_d1dc2421c8c74c99857f2c57cc26036a
+          created: 1764643312986
+          modified: 1768794078140
+          isPrivate: false
+          description: ""
+          sortKey: -1764643234168
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Auth
+    meta:
+      id: fld_d0edc248181f4f4088778e8a1a011418
+      created: 1770003286341
+      modified: 1772077626640
+      sortKey: -1770003286341
+      description: ""
+    children:
+      - url: "{{ _.server }}/auth/signup"
+        name: SignUp
+        meta:
+          id: req_7210cb6bc5ac4d57baf5e8e067579a78
+          created: 1770003298882
+          modified: 1772077537939
+          isPrivate: false
+          description: ""
+          sortKey: -1770003298882
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "username": "admin2",
+              "email": "admin2@email.com",
+              "password": "Pass123",
+            	"isAdmin":true
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.3.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.local5001 }}/auth/signin"
+        name: SignIn
+        meta:
+          id: req_562250cb2c894bd8beb437aadf806093
+          created: 1770004644621
+          modified: 1772077090601
+          isPrivate: false
+          description: ""
+          sortKey: -1770004644621
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "username": "admin",
+              "password": "Pass123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.3.0
+            description: ""
+            disabled: false
+        scripts:
+          afterResponse: |
+            // Parse response body
+            const body = JSON.parse(insomnia.response.body);
+
+            // Lưu accessToken vào environment variable
+            insomnia.environment.set('token', body.data.accessToken);
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: User
+    meta:
+      id: fld_3068889441b148eab45c5ceb9fc2eda6
+      created: 1772076104107
+      modified: 1772077125088
+      sortKey: -1764636946643
+      description: ""
+    children:
+      - url: "{{ _.local5001 }}/users"
+        name: getAllUsers
+        meta:
+          id: req_075db7d840b741528c4f3e2c37aabf27
+          created: 1772076116777
+          modified: 1772076445541
+          isPrivate: false
+          description: ""
+          sortKey: -1772076116777
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.3.1
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.local5001 }}/users/me"
+        name: getMe
+        meta:
+          id: req_c695d111384b45fb8255b1328c626697
+          created: 1772076712070
+          modified: 1772076941278
+          isPrivate: false
+          description: ""
+          sortKey: -1772076712070
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.3.1
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    scripts:
+      preRequest: |-
+        // Lấy token từ environment
+        const token = insomnia.environment.get('token');
+
+        // Nếu có token thì thêm header Authorization
+        if (token) {
+          insomnia.request.addHeader({
+            key: 'Authorization',
+            value: `Bearer ${token}`
+          });
+        }
+    authentication:
+      type: bearer
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_c748063a94304d16a6042d1a3f22bd30f364ad4b
+    created: 1764556402663
+    modified: 1772077633465
+  cookies:
+    - id: 8aeb6b01-2e1a-41ab-8227-ffed26cd700a
+      key: refreshToken
+      value: 1caf43eb91db087b0a4074baf192cdd28ca2a05c30cf54af095a23ac00f7993c441ff5d8aee0901693a1bc21f3e4b000ed2154dbb04ff384be6ddbc448959b9a
+      domain: localhost
+      path: /
+      secure: true
+      httpOnly: true
+      hostOnly: true
+environments:
+  name: Base Environment
+  meta:
+    id: env_c748063a94304d16a6042d1a3f22bd30f364ad4b
+    created: 1764556402661
+    modified: 1772077633467
+    isPrivate: false
+  data:
+    local5001: http://localhost:5001/api
+    server: https://simplequiz-aioj.onrender.com/api
+    baseURL: http://localhost:3000
+    quizID: 692e59fbbe4df52b7bacbdbf
+    quizID2: 692f264ebac6ff006f38db81
+    questionID: 692f302868f3ad444039ca5e
+    questionID2: 692f322c8aa39ee26c82d65e
+    quiz_id_counter: "0"
+    quiz_id_1768794243523: 696da883fa73b4bb98a198c9
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTlmYmQyZDNjZTRiNmI0Y2VhMDk1OTQiLCJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzcyMDc3NjI2LCJleHAiOjE3NzIwNzk0MjZ9.Aj-mbiRVHeAfYRoB0kzwfbs2ZV3GsIv04a1lv9siVjc
+    quiz_id_1772077559253: 699fc1f7f52fa91ac7da84dc

@@ -4,6 +4,7 @@ import { connectDB } from "./libs/db.js";
 import authRoute from "./routes/authRoute.js";
 import userRoute from "./routes/userRoute.js";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import quizRoute from "./routes/quizRoute.js";
 import questionRoute from "./routes/questionRoute.js";
 import attemptRoute from "./routes/attemptRoute.js";
@@ -12,6 +13,17 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
+
+// CORS configuration
+const corsOptions = {
+  origin: process.env.CLIENT_URL || "http://localhost:3000", // Frontend URL
+  credentials: true, // Cho phép gửi cookies
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  maxAge: 86400, // 24 hours - cache preflight response
+};
+
+app.use(cors(corsOptions));
 
 // Middleware to parse JSON requests
 app.use(express.json()); //giúp express hiểu và đọc các body dạng JSON
