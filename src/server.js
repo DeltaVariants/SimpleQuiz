@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 5001;
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.CLIENT_URL || "http://localhost:3000", // Frontend URL
+  origin: true,
   credentials: true, // Cho phép gửi cookies
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
