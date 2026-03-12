@@ -233,7 +233,7 @@ export async function getPopulatedQuizByKeyword(req, res) {
   // GET /quizzes/:quizId/populate
   try {
     const quizWithFilteredQuestions =
-      await quizService.filterQuestionsByKeyword(req.params.quizId, "capital");
+      await quizService.filterQuestionsByKeyword(req.params.quizId, req.query.keyword || "capital");
     if (!quizWithFilteredQuestions) {
       return res.status(404).json(errorResponse(404, "Quiz not found"));
     }
@@ -242,7 +242,7 @@ export async function getPopulatedQuizByKeyword(req, res) {
       .json(
         successResponse(
           quizWithFilteredQuestions,
-          "Quiz populated and filtered by keyword: capital"
+          `Quiz populated and filtered by keyword: ${req.query.keyword || "capital"}`
         )
       );
   } catch (error) {

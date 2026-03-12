@@ -11,13 +11,13 @@ const router = express.Router();
 // Routes gốc: /quizzes
 router
   .route("/")
-  .get(quizController.getAllQuizzes) // GET /quizzes - tất cả user
+  .get(protectedRoute, quizController.getAllQuizzes) // GET /quizzes - đã đăng nhập
   .post(protectedRoute, verifyAdmin, quizController.createQuiz); // POST /quizzes - chỉ Admin
 
 // Routes theo ID: /quizzes/:quizId
 router
   .route("/:quizId")
-  .get(validateObjectId("quizId"), quizController.getQuizById) // GET /quizzes/:quizId - tất cả user
+  .get(validateObjectId("quizId"), protectedRoute, quizController.getQuizById) // GET /quizzes/:quizId - đã đăng nhập
   .put(
     validateObjectId("quizId"),
     protectedRoute,

@@ -89,12 +89,12 @@ class AttemptService {
 
     await attempt.save();
 
-    return {
-      attemptId: attempt._id,
-      score,
-      correctCount,
-      totalQuestions,
-    };
+    // Return full populated attempt so FE can redirect and display results
+    const populated = await Attempt.findById(attempt._id)
+      .populate("quiz", "title description")
+      .populate("answers.question", "text options correctAnswerIndex keywords");
+
+    return populated;
   }
 }
 

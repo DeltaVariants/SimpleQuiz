@@ -29,7 +29,7 @@ class AttemptController {
     try {
       const { attemptId } = req.params;
       const userId = req.user._id;
-      const isAdmin = req.user.admin;
+      const isAdmin = req.user.isAdmin;
 
       const attempt = await attemptService.getAttemptById(
         attemptId,

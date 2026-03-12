@@ -9,13 +9,13 @@ import {
 const router = express.Router();
 
 // Endpoints gốc: /questions
-router.route("/").get(questionController.getAllQuestions); // GET /questions
+router.route("/").get(protectedRoute, questionController.getAllQuestions); // GET /questions
 // POST đã bị loại bỏ - chỉ tạo question qua quiz: POST /quizzes/:quizId/question
 
 // Endpoints độc lập cho Question: /questions/:questionId
 router
   .route("/:questionId")
-  .get(validateObjectId("questionId"), questionController.getQuestionById) // GET /questions/:questionId
+  .get(validateObjectId("questionId"), protectedRoute, questionController.getQuestionById) // GET /questions/:questionId
   .put(
     validateObjectId("questionId"),
     protectedRoute,
